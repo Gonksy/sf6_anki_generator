@@ -1,0 +1,16 @@
+{
+  "name": "sf6_anki_generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,49 +1,43 @@
 const fs = require("fs")
 const XLSX = require("xlsx")
-
-function createJSONWriter() {
-  function write(fileName, data, err) {
-    try {
-      if (err) {
-        throw new Error(err)
-      }
-      const dataJSON = JSON.stringify(data)
-      const filePath = `./sheets/${fileName}.json`
-      fs.writeFile(filePath, dataJSON, (err) => {
-        if (err) {
-          throw new Error(`Failed to write file: ${filePath}`)
-        } else {
-          console.log(`${filePath}: file saved successfully`)
-        }
-      })
-    } catch (e) {
-      console.log(e.message)
-    }
-  }
-  return write
-}
+const util = require("util")
+const roster = require("./roster.json")
 
 function processSheets() {
-  const save = createJSONWriter(),
-    workbook = XLSX.readFile("./sf6Data.xlsx"),
-    { SheetNames } = workbook,
-    normalSheets = SheetNames.filter((sheetName) =>
-      sheetName.includes("Normal")
-    ).reduce((obj, currentSheetName) => {
-      const currentSheet = XLSX.utils.sheet_to_json(
-        workbook.Sheets[currentSheetName]
-      )
-      obj[currentSheetName] = currentSheet
-      return obj
-    }, {})
+  const workbook = XLSX.readFile("./sf6Data.xlsx"),
+    sheets = JSON.stringify(
+      roster.reduce((obj, currChar) => {
+        const stats = XLSX.utils
+          .sheet_to_json(workbook.Sheets[`${currChar}Stats`])
+          .reduce((obj, { name, stat }) => {
+            obj[name] = stat
+            return obj
+          })
+        const normals = XLSX.utils.sheet_to_json(
+          workbook.Sheets[`${currChar}Normal`]
+        )
+        // ******************************
+        // ADD POSSIBLE CHARACTER INSTALLS HERE
+        // ******************************
 
-  function createSheets() {
-    for (const characterName in normalSheets) {
-      const characterSheet = normalSheets[characterName]
-      save(characterName, characterSheet)
-    }
+        obj[currChar] = { stats: stats, normals: normals }
+        return obj
+      }, {})
+    )
+
+  return function () {
+    fs.writeFile("./sheets/sheets.json", sheets, (err) => {
+      if (err) {
+        throw new Error(`Failed to write file: Sheets.json`)
+      } else {
+        console.log(`Sheets.json: file saved successfully`)
+      }
+    })
   }
-  return createSheets
 }
 
-module.exports = { createJSONWriter, processSheets }
+function parseNormalSheet() {}
+
+function parseSheet() {}
+
+module.exports = { processSheets, parseSheet }

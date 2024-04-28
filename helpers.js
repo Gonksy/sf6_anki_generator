@@ -36,8 +36,6 @@ function processSheets() {
   }
 }
 
-function parseNormalSheet() {}
-
 function parseSheet() {}
 
 module.exports = { processSheets, parseSheet }

@@ -1,10 +1,12 @@
 const { processSheets } = require("./helpers")
+const fs = require("fs")
+const path = "./sheets/sheets.json"
+const sheets = fs.existsSync(path) ? require(path) : undefined
+console.log(sheets)
 
-processSheets()()
-
-// RyuNormal.forEach((move) => {
-//   console.log(`How plus/minus is ${move.moveName} on block?`)
-//   console.log(`${move.moveName} is ${move.onBlock} on block`)
-// })
-
-// console.log(normalSheetNames)
+if (!sheets) {
+  console.log(`Sheets not found. Generating sheets from local sf6Data.xlsx`)
+  processSheets()()
+} else {
+  console.log(`Existing sheets loaded successfully`)
+}

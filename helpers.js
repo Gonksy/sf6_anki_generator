@@ -2,6 +2,7 @@ const fs = require("fs")
 const XLSX = require("xlsx")
 const util = require("util")
 const roster = require("./roster.json")
+const installChars = require("./installChars.json")
 
 function processSheets() {
   const workbook = XLSX.readFile("./sf6Data.xlsx"),
@@ -16,11 +17,29 @@ function processSheets() {
         const normals = XLSX.utils.sheet_to_json(
           workbook.Sheets[`${currChar}Normal`]
         )
-        // ******************************
-        // ADD POSSIBLE CHARACTER INSTALLS HERE
-        // ******************************
-
-        obj[currChar] = { stats: stats, normals: normals }
+        let install = null
+        if (installChars.includes(currChar)) {
+          const installSheetNames = workbook.SheetNames.filter(
+            (sheetName) =>
+              sheetName.includes(currChar) &&
+              !sheetName.includes("Normal") &&
+              !sheetName.includes("Stats")
+          )
+          const installSheets = installSheetNames.reduce((obj, sheetName) => {
+            const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
+            const key = sheetName
+              .substring(sheetName.indexOf(currChar) + currChar.length)
+              .trim()
+            obj[key] = sheet
+            return obj
+          }, {})
+          install = installSheets
+        }
+        obj[currChar.toLowerCase()] = {
+          stats: stats,
+          moves: normals,
+          installs: install,
+        }
         return obj
       }, {})
     )
@@ -33,6 +52,7 @@ function processSheets() {
         console.log(`Sheets.json: file saved successfully`)
       }
     })
+    return JSON.parse(sheets)
   }
 }
 

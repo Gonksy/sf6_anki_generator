@@ -1,8 +1,8 @@
 const fs = require("fs")
 const XLSX = require("xlsx")
 const util = require("util")
-const roster = require("./roster.json")
-const installChars = require("./installChars.json")
+const roster = require("./resources/roster.json")
+const installChars = require("./resources/installChars.json")
 
 function processSheets() {
   const workbook = XLSX.readFile("./sf6Data.xlsx"),
@@ -45,7 +45,7 @@ function processSheets() {
     )
 
   return function () {
-    fs.writeFile("./sheets/sheets.json", sheets, (err) => {
+    fs.writeFile("./resources/charData.json", sheets, (err) => {
       if (err) {
         throw new Error(`Failed to write file: Sheets.json`)
       } else {

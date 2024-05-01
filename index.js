@@ -1,7 +1,7 @@
-const { processSheets } = require("./helpers")
+const { processSheets } = require("./modules")
 const fs = require("fs")
 const util = require("util")
-const path = "./sheets/sheets.json"
+const path = "./resources/charData.json"
 let sheets = fs.existsSync(path) ? require(path) : undefined
 
 if (!sheets) {

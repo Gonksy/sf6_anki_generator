@@ -1,15 +1,19 @@
-const { processSheets } = require("./modules")
+const { processSheets, generateQuestions } = require("./modules")
 const fs = require("fs")
 const util = require("util")
 const path = "./resources/charData.json"
-let sheets = fs.existsSync(path) ? require(path) : undefined
+let charData = fs.existsSync(path) ? require(path) : undefined
 
-if (!sheets) {
+if (!charData) {
   console.log(`Sheets not found. Generating sheets from local sf6Data.xlsx`)
-  sheets = processSheets()()
+  charData = processSheets()()
 } else {
   console.log(`Existing sheets loaded successfully`)
 }
 
-const guile = sheets.guile
-console.log(util.inspect(guile, { depth: 0 }))
+// // Test fetching sheet
+// const guile = charData.guile
+// console.log(util.inspect(guile, { depth: 0 }))
+
+// Test generateQuestions module
+generateQuestions(charData)

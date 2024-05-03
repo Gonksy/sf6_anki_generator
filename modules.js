@@ -3,6 +3,7 @@ const XLSX = require("xlsx")
 const util = require("util")
 const roster = require("./resources/roster.json")
 const installChars = require("./resources/installChars.json")
+const questions = require("./resources/questions.json")
 
 function processSheets() {
   const workbook = XLSX.readFile("./sf6Data.xlsx"),
@@ -56,6 +57,22 @@ function processSheets() {
   }
 }
 
-function parseSheet() {}
+function generateQuestions(charData) {
+  console.log("questions", questions)
+  console.log("charData", util.inspect(charData, { depth: 1 }))
 
-module.exports = { processSheets, parseSheet }
+  for (const character in charData) {
+    const moves = charData[character].moves
+    const stats = charData[character].stats
+    const installs = charData[character].installs
+
+    moves.forEach((move) => {
+      // lord forgive me
+      questions.forEach((question) => {
+        console.log("oh...")
+      })
+    })
+  }
+}
+
+module.exports = { processSheets, generateQuestions }

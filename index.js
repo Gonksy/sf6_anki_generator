@@ -1,19 +1,29 @@
 const { processSheets, generateQuestions } = require("./modules")
 const fs = require("fs")
 const util = require("util")
-const path = "./resources/charData.json"
-let charData = fs.existsSync(path) ? require(path) : undefined
+const charDataPath = "./resources/generated/charData.json"
+const cardBankPath = "./resources/generated/cardBank.json"
+let charData = fs.existsSync(charDataPath) ? require(charDataPath) : undefined
+let cardBank = fs.existsSync(cardBankPath) ? require(cardBankPath) : undefined
 
 if (!charData) {
-  console.log(`Sheets not found. Generating sheets from local sf6Data.xlsx`)
+  console.log(
+    `Char data not found. Generating char data from local sf6Data.xlsx (1)`
+  )
   charData = processSheets()()
+  console.log(`Char data generated successfully (3)`)
 } else {
   console.log(`Existing sheets loaded successfully`)
 }
 
-// // Test fetching sheet
-// const guile = charData.guile
-// console.log(util.inspect(guile, { depth: 0 }))
+if (!cardBank) {
+  console.log(`Card bank not found. Generating cards from character data. (1)`)
+  cardBank = generateQuestions(charData)()
+  console.log(`Card bank generated successfully (3)`)
+} else {
+  console.log(`Existing card bank loaded successfully`)
+}
 
-// Test generateQuestions module
-generateQuestions(charData)
+//Test cardbank
+
+console.log(util.inspect(cardBank, { depth: 0 }))

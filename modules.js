@@ -1,9 +1,9 @@
 const fs = require("fs")
 const XLSX = require("xlsx")
 const util = require("util")
-const roster = require("./resources/roster.json")
-const installChars = require("./resources/installChars.json")
-const questions = require("./resources/questions.json")
+const roster = require("./resources/static/roster.json")
+const installChars = require("./resources/static/installChars.json")
+const questions = require("./resources/static/questions")
 
 function processSheets() {
   const workbook = XLSX.readFile("./sf6Data.xlsx"),
@@ -46,32 +46,43 @@ function processSheets() {
     )
 
   return function () {
-    fs.writeFile("./resources/charData.json", sheets, (err) => {
-      if (err) {
-        throw new Error(`Failed to write file: Sheets.json`)
-      } else {
-        console.log(`Sheets.json: file saved successfully`)
-      }
-    })
+    fs.writeFileSync("./resources/generated/charData.json", sheets)
+    console.log(`charData.json: file saved successfully (2)`)
     return JSON.parse(sheets)
   }
 }
 
 function generateQuestions(charData) {
-  console.log("questions", questions)
-  console.log("charData", util.inspect(charData, { depth: 1 }))
-
+  const cardBank = {}
   for (const character in charData) {
     const moves = charData[character].moves
     const stats = charData[character].stats
     const installs = charData[character].installs
 
+    const cards = []
+
     moves.forEach((move) => {
       // lord forgive me
       questions.forEach((question) => {
-        console.log("oh...")
+        const moveQuestion = question.question(move.moveName)
+        const reference = move[question.ref]
+        const moveAnswer = question.answer(reference)
+        const questionCard = {
+          question: moveQuestion,
+          answer: moveAnswer,
+          difficulty: question.difficulty,
+        }
+        cards.push(questionCard)
       })
     })
+    cardBank[character] = cards
+  }
+  const cardBankJSON = JSON.stringify(cardBank)
+
+  return function () {
+    fs.writeFileSync(`./resources/generated/cardBank.json`, cardBankJSON)
+    console.log(`cardBank.json: file saved successfully (2)`)
+    return JSON.parse(cardBankJSON)
   }
 }
 
